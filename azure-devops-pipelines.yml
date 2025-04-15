@@ -7,8 +7,8 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  azureServiceConnection: 'Your-Service-Connection-Name'
-  resourceGroupName: 'my-rg-dev'
+  azureServiceConnection: 'Abel-serviceP-conn'
+  resourceGroupName: 'abel_RG'
   location: 'westeurope'
 
 steps:
