@@ -5,7 +5,6 @@ param environment string
 param sqlAdminUsername string
 @secure()
 param sqlAdminPassword string
-param administratorPassword string = '@Microsoft.KeyVault(SecretUri=https://sql-secret.vault.azure.net/secrets/abel-sql-secret/5ac6f15d73184eaeb61911f0bdfcc0e5)'
 
 module storage 'modules/storage-account.bicep' = {
   name: 'storageDeploy'
@@ -21,7 +20,7 @@ module sql 'modules/sql.bicep' = {
     location: location
     environment: environment
     administratorLogin: sqlAdminUsername
-    administratorPassword: administratorPassword
+    administratorPassword: sqlAdminPassword
   }
 }
 
