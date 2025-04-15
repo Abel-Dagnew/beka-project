@@ -1,14 +1,11 @@
 param location string
 param environment string
 param administratorLogin string
-
-var keyVault = resource(keyVaultName, 'Microsoft.KeyVault/vaults@2021-10-01')
-
 @secure()
-param administratorPassword string = keyVault.getSecret(secretName)
+param administratorPassword string
 
 resource sqlServer 'Microsoft.Sql/servers@2022-02-01-preview' = {
-  name: 'sql-${uniqueString(resourceGroup().id)}'
+  name: 'sql-${uniqueString(resourceGroup().id, environment)}'
   location: location
   properties: {
     administratorLogin: administratorLogin
@@ -18,7 +15,9 @@ resource sqlServer 'Microsoft.Sql/servers@2022-02-01-preview' = {
 }
 
 resource sqlDb 'Microsoft.Sql/servers/databases@2022-02-01-preview' = {
-  name: '${sqlServer.name}/myappdb'
+  name: 'myappdb'
+  parent: sqlServer
+  location: location
   properties: {
     collation: 'SQL_Latin1_General_CP1_CI_AS'
     maxSizeBytes: 2147483648
