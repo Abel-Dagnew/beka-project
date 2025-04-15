@@ -1,0 +1,25 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  azureServiceConnection: 'Your-Service-Connection-Name'
+  resourceGroupName: 'my-rg-dev'
+  location: 'westeurope'
+
+steps:
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        az bicep install
+        az deployment group create \
+          --resource-group $(resourceGroupName) \
+          --template-file iac/main.bicep \
+          --parameters @iac/parameters/dev.parameters.json
