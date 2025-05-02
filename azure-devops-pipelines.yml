@@ -12,14 +12,33 @@ variables:
   location: 'westeurope'
 
 steps:
-  - task: AzureCLI@2
+
+  # Install Terraform
+  - task: TerraformInstaller@1
     inputs:
-      azureSubscription: $(azureServiceConnection)
-      scriptType: bash
-      scriptLocation: inlineScript
-      inlineScript: |
-        az bicep install
-        az deployment group create \
-          --resource-group $(resourceGroupName) \
-          --template-file iac/main.bicep \
-          --parameters @iac/parameters/dev.parameters.json
+      terraformVersion: '1.5.7'
+
+  # Terraform Init (uses backend.tf)
+  - task: TerraformCLI@1
+    inputs:
+      provider: 'azurerm'
+      command: 'init'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+      environmentServiceName: $(azureServiceConnection)
+
+  # Terraform Plan
+  - task: TerraformCLI@1
+    inputs:
+      provider: 'azurerm'
+      command: 'plan'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+      environmentServiceName: $(azureServiceConnection)
+
+  # Terraform Apply
+  - task: TerraformCLI@1
+    inputs:
+      provider: 'azurerm'
+      command: 'apply'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+      environmentServiceName: $(azureServiceConnection)
+      args: '-auto-approve'
